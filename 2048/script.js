@@ -4,6 +4,7 @@ const WINNING_TILE = 2048;
 const gridContainer = document.getElementById("grid-container");
 const scoreDisplay = document.getElementById("score");
 const newGameButton = document.getElementById("new-game");
+const hammertime = new Hammer(gridContainer);
 
 let grid = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(0));
 let score = 0;
@@ -98,64 +99,21 @@ newGameButton.addEventListener("click", () => {
   initializeGame();
 });
 
-let touchStartX, touchStartY, touchEndX, touchEndY;
-
-gridContainer.addEventListener("touchstart", (event) => {
-  touchStartX = event.touches[0].clientX;
-  touchStartY = event.touches[0].clientY;
+hammertime.on("swipeup", () => {
+  moveUp();
 });
 
-gridContainer.addEventListener("touchmove", (event) => {
-  event.preventDefault(); // Prevent page scrolling
-  touchEndX = event.touches[0].clientX;
-  touchEndY = event.touches[0].clientY;
+hammertime.on("swipedown", () => {
+  moveDown();
 });
 
-gridContainer.addEventListener("touchend", (event) => {
-  handleTouchSwipe();
+hammertime.on("swipeleft", () => {
+  moveLeft();
 });
 
-function handleTouchSwipe() {
-  const dx = touchEndX - touchStartX;
-  const dy = touchEndY - touchStartY;
-  const absDx = Math.abs(dx);
-  const absDy = Math.abs(dy);
-
-  console.log(absDx, absDy);
-
-  if (Math.max(absDx, absDy) > 20) {
-    if (absDx > absDy) {
-      if (dx > 0) {
-        // Right swipe
-        moveRight();
-      } else {
-        // Left swipe
-        moveLeft();
-      }
-    } else {
-      if (dy > 0) {
-        // Down swipe
-        moveDown();
-      } else {
-        // Up swipe
-        moveUp();
-      }
-    }
-  }
-
-  if (moved) {
-    addRandomTile();
-    updateUI();
-
-    if (hasWon()) {
-      alert("Congratulations! You've won the game!");
-    }
-
-    if (isGameOver()) {
-      alert("Game over! Try again.");
-    }
-  }
-}
+hammertime.on("swiperight", () => {
+  moveRight();
+});
 
 // Implement the game logic for moving tiles and checking win/game over conditions here
 // Function to move tiles up
