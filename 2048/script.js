@@ -58,6 +58,10 @@ function updateUI() {
 // Initialize the game
 initializeGame();
 
+newGameButton.addEventListener("click", () => {
+  initializeGame();
+});
+
 // Handle user input (arrow keys)
 document.addEventListener("keydown", (event) => {
   if (isGameOver()) return;
