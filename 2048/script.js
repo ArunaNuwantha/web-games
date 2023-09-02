@@ -98,6 +98,65 @@ newGameButton.addEventListener("click", () => {
   initializeGame();
 });
 
+let touchStartX, touchStartY, touchEndX, touchEndY;
+
+gridContainer.addEventListener("touchstart", (event) => {
+  touchStartX = event.touches[0].clientX;
+  touchStartY = event.touches[0].clientY;
+});
+
+gridContainer.addEventListener("touchmove", (event) => {
+  event.preventDefault(); // Prevent page scrolling
+  touchEndX = event.touches[0].clientX;
+  touchEndY = event.touches[0].clientY;
+});
+
+gridContainer.addEventListener("touchend", (event) => {
+  handleTouchSwipe();
+});
+
+function handleTouchSwipe() {
+  const dx = touchEndX - touchStartX;
+  const dy = touchEndY - touchStartY;
+  const absDx = Math.abs(dx);
+  const absDy = Math.abs(dy);
+
+  console.log(absDx, absDy);
+
+  if (Math.max(absDx, absDy) > 20) {
+    if (absDx > absDy) {
+      if (dx > 0) {
+        // Right swipe
+        moveRight();
+      } else {
+        // Left swipe
+        moveLeft();
+      }
+    } else {
+      if (dy > 0) {
+        // Down swipe
+        moveDown();
+      } else {
+        // Up swipe
+        moveUp();
+      }
+    }
+  }
+
+  if (moved) {
+    addRandomTile();
+    updateUI();
+
+    if (hasWon()) {
+      alert("Congratulations! You've won the game!");
+    }
+
+    if (isGameOver()) {
+      alert("Game over! Try again.");
+    }
+  }
+}
+
 // Implement the game logic for moving tiles and checking win/game over conditions here
 // Function to move tiles up
 function moveUp() {
@@ -284,48 +343,4 @@ function hasWon() {
     }
   }
   return false;
-}
-
-let touchStartX, touchStartY, touchEndX, touchEndY;
-
-gridContainer.addEventListener("touchstart", (event) => {
-  touchStartX = event.touches[0].clientX;
-  touchStartY = event.touches[0].clientY;
-});
-
-gridContainer.addEventListener("touchmove", (event) => {
-  event.preventDefault(); // Prevent page scrolling
-  touchEndX = event.touches[0].clientX;
-  touchEndY = event.touches[0].clientY;
-});
-
-gridContainer.addEventListener("touchend", (event) => {
-  handleTouchSwipe();
-});
-
-function handleTouchSwipe() {
-  const dx = touchEndX - touchStartX;
-  const dy = touchEndY - touchStartY;
-  const absDx = Math.abs(dx);
-  const absDy = Math.abs(dy);
-
-  if (Math.max(absDx, absDy) > 20) {
-    if (absDx > absDy) {
-      if (dx > 0) {
-        // Right swipe
-        moveRight();
-      } else {
-        // Left swipe
-        moveLeft();
-      }
-    } else {
-      if (dy > 0) {
-        // Down swipe
-        moveDown();
-      } else {
-        // Up swipe
-        moveUp();
-      }
-    }
-  }
 }
