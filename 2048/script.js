@@ -4,7 +4,6 @@ const WINNING_TILE = 2048;
 const gridContainer = document.getElementById("grid-container");
 const scoreDisplay = document.getElementById("score");
 const newGameButton = document.getElementById("new-game");
-const hammertime = new Hammer(gridContainer);
 
 let grid = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(0));
 let score = 0;
@@ -94,25 +93,126 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-// Handle New Game button click
-newGameButton.addEventListener("click", () => {
-  initializeGame();
+let isDragging = false;
+let startX, startY;
+
+gridContainer.addEventListener("mousedown", (event) => {
+  isDragging = true;
+  startX = event.clientX;
+  startY = event.clientY;
 });
 
-hammertime.on("swipeup", () => {
-  moveUp();
+gridContainer.addEventListener("mousemove", (event) => {
+  if (isGameOver()) return;
+
+  let moved = false;
+
+  if (!isDragging) return;
+
+  const currentX = event.clientX;
+  const currentY = event.clientY;
+  const dx = currentX - startX;
+  const dy = currentY - startY;
+  const threshold = 20; // Adjust as needed
+
+  if (Math.abs(dx) > threshold || Math.abs(dy) > threshold) {
+    isDragging = false;
+    console.log(dx, dy);
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx > 0) {
+        // Right swipe
+        moved = moveRight();
+      } else {
+        // Left swipe
+        moved = moveLeft();
+      }
+    } else {
+      if (dy > 0) {
+        // Down swipe
+        moved = moveDown();
+      } else {
+        // Up swipe
+        moved = moveUp();
+      }
+    }
+  }
+
+  if (moved) {
+    addRandomTile();
+    updateUI();
+
+    if (hasWon()) {
+      alert("Congratulations! You've won the game!");
+    }
+
+    if (isGameOver()) {
+      alert("Game over! Try again.");
+    }
+  }
 });
 
-hammertime.on("swipedown", () => {
-  moveDown();
+gridContainer.addEventListener("mouseup", () => {
+  isDragging = false;
 });
 
-hammertime.on("swipeleft", () => {
-  moveLeft();
+gridContainer.addEventListener("touchstart", (event) => {
+  isDragging = true;
+  startX = event.touches[0].clientX;
+  startY = event.touches[0].clientY;
 });
 
-hammertime.on("swiperight", () => {
-  moveRight();
+gridContainer.addEventListener("touchmove", (event) => {
+  event.preventDefault();
+  if (!isDragging) return;
+
+  if (isGameOver()) return;
+
+  let moved = false;
+
+  const currentX = event.touches[0].clientX;
+  const currentY = event.touches[0].clientY;
+  const dx = currentX - startX;
+  const dy = currentY - startY;
+  const threshold = 20; // Adjust as needed
+
+  if (Math.abs(dx) > threshold || Math.abs(dy) > threshold) {
+    isDragging = false;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx > 0) {
+        // Right swipe
+        moved = moveRight();
+      } else {
+        // Left swipe
+        moved = moveLeft();
+      }
+    } else {
+      if (dy > 0) {
+        // Down swipe
+        moved = moveDown();
+      } else {
+        // Up swipe
+        moved = moveUp();
+      }
+    }
+  }
+  if (moved) {
+    addRandomTile();
+    updateUI();
+
+    if (hasWon()) {
+      alert("Congratulations! You've won the game!");
+    }
+
+    if (isGameOver()) {
+      alert("Game over! Try again.");
+    }
+  }
+});
+
+gridContainer.addEventListener("touchend", () => {
+  isDragging = false;
 });
 
 // Implement the game logic for moving tiles and checking win/game over conditions here
