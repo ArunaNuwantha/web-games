@@ -13,12 +13,13 @@
 
 /* Style the game title */
 h1 {
-    font-size: 28px;
+    font-size: 32px;
     color: #333;
 }
 
 /* Style the score display */
 #score {
+    font-family: sans-serif;
     font-size: 18px;
     margin-bottom: 10px;
 }
@@ -123,3 +124,24 @@ h1 {
 #new-game:active {
     background-color: #786954;
 }
+
+@keyframes moveTile {
+    from {
+        transform: translate(0, 0);
+    }
+    to {
+        transform: translate(var(--distanceX), var(--distanceY));
+    }
+}
+
+@keyframes mergeNumbers {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(1.2);
+    }
+}
+

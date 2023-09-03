@@ -48,6 +48,7 @@ function updateUI() {
       const cellValue = grid[row][col];
       const cell = document.createElement("div");
       cell.className = `grid-cell value-${cellValue}`;
+      cell.id = `tile-${row}-${col}`;
       cell.textContent = cellValue !== 0 ? cellValue : "";
       gridContainer.appendChild(cell);
     }
@@ -236,11 +237,22 @@ function moveUp() {
             grid[newRow - 1][col] = currentTile;
             newRow--;
             moved = true;
+            const tileElement = document.getElementById(
+              `tile-${newRow}-${col}`
+            );
+            moveCell(tileElement, newRow, col);
           } else if (tileAbove === currentTile) {
             grid[newRow][col] = 0;
             grid[newRow - 1][col] = currentTile * 2;
             score += currentTile * 2;
             moved = true;
+            const tileElement1 = document.getElementById(
+              `tile-${newRow}-${col}`
+            );
+            const tileElement2 = document.getElementById(
+              `tile-${newRow - 1}-${col}`
+            );
+            mergeTiles(tileElement1, tileElement2);
             break;
           } else {
             break;
@@ -405,4 +417,35 @@ function hasWon() {
     }
   }
   return false;
+}
+
+function moveCell(cell, newRow, newCol) {
+  const cellSize = 60; // Adjust to your grid cell size
+  const distanceX = (newCol - cell.col) * cellSize;
+  const distanceY = (newRow - cell.row) * cellSize;
+
+  cell.style.setProperty("--distanceX", `${distanceX}px`);
+  cell.style.setProperty("--distanceY", `${distanceY}px`);
+
+  cell.style.animation = "moveTile 0.2s ease-in-out";
+  cell.style.animationFillMode = "forwards";
+
+  cell.addEventListener("animationend", () => {
+    cell.style.animation = "";
+  });
+}
+
+function mergeTiles(tile1, tile2) {
+  // Update the merged tile's value
+  tile1.value *= 2;
+  tile2.value = 0;
+
+  tile2.style.animation = "mergeNumbers 0.3s ease-in-out";
+  tile2.style.animationFillMode = "forwards";
+
+  tile2.addEventListener("animationend", () => {
+    tile2.style.animation = "";
+  });
+
+  // Additional logic (e.g., scoring, win checking) here
 }
