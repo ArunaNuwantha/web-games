@@ -1,5 +1,5 @@
 const GRID_SIZE = 4;
-const WINNING_TILE = 2048;
+const WINNING_TILE = 1024;
 
 const gridContainer = document.getElementById("grid-container");
 const scoreDisplay = document.getElementById("score");
